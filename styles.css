@@ -211,6 +211,11 @@
     color: #bbb;
 }
 
+.second-canvas {
+    position: absolute;
+    top: 0;
+}
+
 @media screen and (max-width: 500px) {
     .info-box .lines {
         flex-wrap: wrap;
@@ -228,10 +233,4 @@
     .info-box .lines .value .line-name {
         font-size: 10px;
     }
-}
-
-
-.second-canvas {
-    position: absolute;
-    top: 0;
 }
