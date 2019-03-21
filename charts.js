@@ -424,7 +424,7 @@ function cloneCanvas(oldCanvas) {
 /*
  * Mode switcher
 */
-document.getElementsByClassName('mode-switcher')[0].addEventListener('click', (e) => {
+document.getElementsByClassName('mode-switcher')[0].getElementsByTagName('a')[0].addEventListener('click', (e) => {
     e.target.innerText = e.target.className.indexOf('night') === -1 ? 'Switch to Day Mode' : 'Switch to Night Mode';
     e.target.classList.toggle('night');
     document.body.classList.toggle('night-mode');
