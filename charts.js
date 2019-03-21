@@ -106,7 +106,13 @@ function start() {
 
                 // Add click handlers to inclusion controls
                 circleIcon.addEventListener('click', (e) => {
+                    circleIcon.classList.add('icon--click');
                     inclusionHandler(e, chart.colors[name]);
+
+                    // Removing class for animation
+                    setTimeout(() => {
+                        circleIcon.classList.remove('icon--click')
+                    }, 500);
                 });
 
                 let nameBlock = document.createElement('div');
