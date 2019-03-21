@@ -208,8 +208,6 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
         chart.maxAmongAllLines = maxAmongAllLines;
     }
 
-    // console.log(maxAmongAllLines);
-
     // Drawing lines
     chart.columns.forEach((col, j) => {
         if (j > 0) {
@@ -281,9 +279,7 @@ function createTabs() {
         }
 
         chartTab.innerText = `№ ${i + 1}`;
-
         chartTab.addEventListener('click', _tabClicked);
-
         tabsContainer.appendChild(chartTab);
     });
 
