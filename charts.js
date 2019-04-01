@@ -9,7 +9,7 @@ const oneYScalePart = 1 / scaleDivisionByY;
 
 const circlesRadius = 5.5;
 
-let canvasWidth = document.documentElement.clientWidth - containerPadding * 2;
+let canvasWidth = document.documentElement.clientWidth - containerPadding * 2 - 15;
 let canvasHeight = parseInt(document.documentElement.clientHeight / 2);
 
 let secondaryChartCanvasHeight = parseInt(document.documentElement.clientHeight / 10) > 50 ? parseInt(document.documentElement.clientHeight / 10) : 50;
@@ -150,6 +150,8 @@ function start() {
         drawChart(`chart-block--${i}`, chart, canvasWidth, canvasHeight, true);
         drawChart(`secondary-chart-block--${i}`, chart, canvasWidth, secondaryChartCanvasHeight);
     });
+
+
 }
 
 function drawLine(ctx, startX, startY, endX, endY, color) {
