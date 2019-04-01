@@ -31,7 +31,7 @@ const animationStepsPerFrame = 15;
 start();
 
 function start() {
-    createTabs();
+    // createTabs();
 
     document.getElementById('container').style.padding = `${containerPadding}px`;
 

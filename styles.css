@@ -42,7 +42,6 @@
 
 [class^='chart-block'] {
     position: relative;
-    display: none;
 }
 
 .chart-block--0 {
