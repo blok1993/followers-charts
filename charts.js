@@ -1,6 +1,7 @@
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+const deviceDpr = window.devicePixelRatio || 1;
 const containerPadding = 20;
 
 const scaleDivisionByY = 6;
@@ -9,10 +10,10 @@ const oneYScalePart = 1 / scaleDivisionByY;
 
 const circlesRadius = 5.5;
 
-let canvasWidth = document.documentElement.clientWidth - containerPadding * 2 - 15;
+let canvasWidth = (document.documentElement.clientWidth - containerPadding * 2);
 let canvasHeight = parseInt(document.documentElement.clientHeight / 2);
 
-let secondaryChartCanvasHeight = parseInt(document.documentElement.clientHeight / 10) > 50 ? parseInt(document.documentElement.clientHeight / 10) : 50;
+let secondaryChartCanvasHeight = (parseInt(document.documentElement.clientHeight / 10) > 50 ? parseInt(document.documentElement.clientHeight / 10) : 50);
 
 // That width is for more comfortable touching on mobile devices
 const rangeControlWidth = 15;
@@ -28,9 +29,9 @@ let pos1 = 0, pos2 = 0;
 
 const animationStepsPerFrame = 15;
 
-start();
+start(true);
 
-function start() {
+function start(firstRun) {
     // createTabs();
 
     document.getElementById('container').style.padding = `${containerPadding}px`;
@@ -151,7 +152,11 @@ function start() {
         drawChart(`secondary-chart-block--${i}`, chart, canvasWidth, secondaryChartCanvasHeight);
     });
 
-
+    if (firstRun) {
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        });
+    }
 }
 
 
@@ -198,8 +203,9 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
     currentCanvas.addEventListener('pointercancel', _onChartPointerCancel);
     currentCanvas.addEventListener('pointerleave', _onChartPointerCancel);
 
-    let ctx = setupCanvas(currentCanvas);
-    // let ctx = currentCanvas.getContext('2d');
+    // let ctx = setupCanvas(currentCanvas);
+    let ctx = currentCanvas.getContext('2d');
+
     ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height);
 
     ctx.font = '11px Arial';
@@ -235,10 +241,10 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
                 col.forEach((value, k) => {
                     if (k >= startFrom && k <= endWith) {
                         if (k > 0) {
-                            const xStartValue = Math.floor((chart.columns[0][k - 1] - minX) / (maxX - minX) * canvasWidth);
-                            const yStartValue = Math.floor(canvasHeight - col[k - 1] * canvasHeight / maxAmongAllLines);
-                            const xEndValue = Math.floor((chart.columns[0][k] - minX) / (maxX - minX) * canvasWidth);
-                            const yEndValue = Math.floor(canvasHeight - value * canvasHeight / maxAmongAllLines);
+                            const xStartValue = (chart.columns[0][k - 1] - minX) / (maxX - minX) * canvasWidth;
+                            const yStartValue = canvasHeight - col[k - 1] * canvasHeight / maxAmongAllLines;
+                            const xEndValue = (chart.columns[0][k] - minX) / (maxX - minX) * canvasWidth;
+                            const yEndValue = canvasHeight - value * canvasHeight / maxAmongAllLines;
                             drawLine(ctx, xStartValue, yStartValue, xEndValue, yEndValue, chart.colors[col[0]]);
                         }
                     }
@@ -749,7 +755,7 @@ function moveRangeSelector(e) {
  * Catching window resize
 */
 window.addEventListener("optimizedResize", () => {
-    canvasWidth = document.documentElement.clientWidth - containerPadding * 2;
+    canvasWidth = (document.documentElement.clientWidth - containerPadding * 2);
     canvasHeight = parseInt(document.documentElement.clientHeight / 2);
 
     document.getElementById('container').innerHTML = '<h2>Followers</h2>';
