@@ -217,10 +217,10 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
                 col.forEach((value, k) => {
                     if (k >= startFrom && k <= endWith) {
                         if (k > 0) {
-                            const xStartValue = (chart.columns[0][k - 1] - minX) / (maxX - minX) * canvasWidth;
-                            const yStartValue = canvasHeight - col[k - 1] * canvasHeight / maxAmongAllLines;
-                            const xEndValue = (chart.columns[0][k] - minX) / (maxX - minX) * canvasWidth;
-                            const yEndValue = canvasHeight - value * canvasHeight / maxAmongAllLines;
+                            const xStartValue = Math.floor((chart.columns[0][k - 1] - minX) / (maxX - minX) * canvasWidth);
+                            const yStartValue = Math.floor(canvasHeight - col[k - 1] * canvasHeight / maxAmongAllLines);
+                            const xEndValue = Math.floor((chart.columns[0][k] - minX) / (maxX - minX) * canvasWidth);
+                            const yEndValue = Math.floor(canvasHeight - value * canvasHeight / maxAmongAllLines);
                             drawLine(ctx, xStartValue, yStartValue, xEndValue, yEndValue, chart.colors[col[0]]);
                         }
                     }
