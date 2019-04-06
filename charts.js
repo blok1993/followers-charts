@@ -154,6 +154,23 @@ function start() {
 
 }
 
+
+function setupCanvas(canvas) {
+    // Get the device pixel ratio, falling back to 1.
+    let dpr = window.devicePixelRatio || 1;
+    // Get the size of the canvas in CSS pixels.
+    let rect = canvas.getBoundingClientRect();
+    // Give the canvas pixel dimensions of their CSS
+    // size * the device pixel ratio.
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    let ctx = canvas.getContext('2d');
+    // Scale all drawing operations by the dpr, so you
+    // don't have to worry about the difference.
+    ctx.scale(dpr, dpr);
+    return ctx;
+}
+
 function drawLine(ctx, startX, startY, endX, endY, color) {
     ctx.save();
     ctx.strokeStyle = color;
@@ -181,7 +198,8 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
     currentCanvas.addEventListener('pointercancel', _onChartPointerCancel);
     currentCanvas.addEventListener('pointerleave', _onChartPointerCancel);
 
-    let ctx = currentCanvas.getContext('2d');
+    let ctx = setupCanvas(currentCanvas);
+    // let ctx = currentCanvas.getContext('2d');
     ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height);
 
     ctx.font = '11px Arial';
