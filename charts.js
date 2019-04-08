@@ -28,12 +28,11 @@ let rangeDraggableBordersGestureHasStarted = false;
 let pos1 = 0, pos2 = 0;
 
 const animationStepsPerFrame = 14;
+let globalOldMax;
 
 start(true);
 
 function start(firstRun) {
-    // createTabs();
-
     document.getElementById('container').style.padding = `${containerPadding}px`;
 
     chartData.forEach((chart, i) => {
@@ -287,30 +286,6 @@ function formDateForView(ms, full) {
 }
 
 /*
- * Creation of tabs for more comfortable switching between charts
-*/
-function createTabs() {
-    let tabsContainer = document.createElement('div');
-    tabsContainer.id = `tabs`;
-
-    chartData.forEach((chart, i) => {
-        let chartTab = document.createElement('div');
-        chartTab.classList.add(`tab`);
-        chartTab.setAttribute('number', i);
-
-        if (i === 0) {
-            chartTab.classList.add(`active`);
-        }
-
-        chartTab.innerText = `№ ${i + 1}`;
-        chartTab.addEventListener('click', _tabClicked);
-        tabsContainer.appendChild(chartTab);
-    });
-
-    document.getElementById('container').appendChild(tabsContainer);
-}
-
-/*
  * Include or exclude line in/from chart
 */
 function inclusionHandler(e, color) {
@@ -338,17 +313,7 @@ function inclusionHandler(e, color) {
     infoBoxContainer.classList.remove('shown');
 
 
-    let maxAmongAllLines = 0;
-
-    // Define maximum Y value among chart lines
-    chart.columns.forEach((col, j) => {
-        if (j > 0) {
-            if (chart.included.indexOf(col[0]) > -1) {
-                const localMax = findMaxValue(col, chart.leftBorderIndex, chart.rightBorderIndex);
-                maxAmongAllLines = maxAmongAllLines > localMax ? maxAmongAllLines : localMax;
-            }
-        }
-    });
+    let maxAmongAllLines = defineMaxAmongAllLines(index, chart.leftBorderIndex, chart.rightBorderIndex);
 
     const mainBlockId = params.oldMax === maxAmongAllLines ? `chart-block--${index}` : `virtual-1`;
     const lowBlockId = params.oldMax === maxAmongAllLines ? `secondary-chart-block--${index}` : `virtual-2`;
@@ -429,6 +394,8 @@ function animateChart(ctx, oldMax, newMax, startStateCanvas, endStateCanvas, i, 
         requestAnimationFrame(() => {
             animateChart(ctx, oldMax, newMax, startStateCanvas, endStateCanvas, i, canvasHeight);
         });
+    } else {
+        globalOldMax = newMax;
     }
 }
 
@@ -587,24 +554,6 @@ function setPositionForInfoBox(e) {
 }
 
 /*
- * Tabs controller
-*/
-function _tabClicked(e) {
-    const tabs = document.getElementById('tabs').getElementsByClassName('tab');
-    for (let i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove('active');
-    }
-
-    e.target.classList.add('active');
-    const chartNumberToShow = parseInt(e.target.getAttribute('number'));
-
-    const chartBlocks = document.getElementsByClassName('chart-block');
-    for (let i = 0; i < chartBlocks.length; i++) {
-        chartBlocks[i].style.display = chartNumberToShow === i ? 'block' : 'none';
-    }
-}
-
-/*
  * Pointer events callbacks
 */
 function _onChartPointerDown(e) {
@@ -653,6 +602,10 @@ function dragPointerDown(e) {
     pos1 = 0;
     pos2 = e.clientX;
     rangeDraggableBordersGestureHasStarted = true;
+
+    const chartIndex = parseInt(e.target.closest('.chart-block').className.split('--')[1]);
+    globalOldMax = chartData[chartIndex].maxAmongAllLines;
+    console.log(globalOldMax);
 }
 
 function dragPointerUp(e) {
@@ -707,8 +660,39 @@ function dragPointerMove(e) {
             endWith = chartData[chartIndex].rightBorderIndex;
         }
 
-        drawChart(`chart-block--${chartIndex}`, chartData[chartIndex], canvasWidth, canvasHeight, true, startFrom, endWith);
+
+        let maxAmongAllLines = defineMaxAmongAllLines(chartIndex, startFrom, endWith);
+
+        const mainBlockId = globalOldMax === maxAmongAllLines ? `chart-block--${chartIndex}` : `virtual-1`;
+        if (globalOldMax === maxAmongAllLines) {
+            drawChart(`chart-block--${chartIndex}`, chartData[chartIndex], canvasWidth, canvasHeight, true, startFrom, endWith);
+        } else {
+            drawChart(`virtual-1`, chartData[chartIndex], canvasWidth, canvasHeight, false, startFrom, endWith);
+        }
+
+        // Animation of changing chart
+        const newC = document.getElementById(mainBlockId);
+
+        if (globalOldMax !== maxAmongAllLines) {
+            requestAnimationFrame(() => {
+                animateChart(document.getElementById(`chart-block--${chartIndex}`).getContext('2d'), globalOldMax, maxAmongAllLines, cloneCanvas(document.getElementById(`chart-block--${chartIndex}`)), cloneCanvas(newC), 1, canvasHeight);
+            });
+        }
     }
+}
+
+function defineMaxAmongAllLines(chartIndex, startFrom, endWith) {
+    let maxAmongAllLines = 0;
+    chartData[chartIndex].columns.forEach((col, j) => {
+        if (j > 0) {
+            if (chartData[chartIndex].included.indexOf(col[0]) > -1) {
+                const localMax = findMaxValue(col, startFrom, endWith);
+                maxAmongAllLines = maxAmongAllLines > localMax ? maxAmongAllLines : localMax;
+            }
+        }
+    });
+
+    return maxAmongAllLines;
 }
 
 function moveRangeSelector(e) {
