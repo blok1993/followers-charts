@@ -27,7 +27,7 @@ let distanceToBorderControlsFromPointer = {
 let rangeDraggableBordersGestureHasStarted = false;
 let pos1 = 0, pos2 = 0;
 
-const animationStepsPerFrame = 15;
+const animationStepsPerFrame = 14;
 
 start(true);
 
@@ -206,7 +206,6 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
 
     // let ctx = setupCanvas(currentCanvas);
     let ctx = currentCanvas.getContext('2d');
-    ctx.globalAlpha = globalAlpha;
 
     function fix_dpi(currentCanvas) {
         let style = {
@@ -225,6 +224,7 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
 
     ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height);
 
+    ctx.globalAlpha = globalAlpha;
     ctx.font = `${11 * dpi}px Arial`;
     ctx.fillStyle = '#bbb';
 
