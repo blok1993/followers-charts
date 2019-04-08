@@ -179,7 +179,7 @@ function setupCanvas(canvas) {
 function drawLine(ctx, startX, startY, endX, endY, color) {
     ctx.save();
     ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2 * dpi;
     ctx.beginPath();
     ctx.moveTo(startX * dpi,startY * dpi);
     ctx.lineTo(endX * dpi,endY * dpi);
