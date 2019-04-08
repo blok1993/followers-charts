@@ -376,16 +376,11 @@ function inclusionHandler(e, color) {
 
 function generateParamsForAnimation(canvas, index) {
     const ctx = canvas.getContext("2d");
-    const startCanvasCopy = cloneCanvas(canvas);
     const startStateCanvas = cloneCanvas(canvas);
-    startCanvasCopy.classList.add('second-canvas');
-    const newCtx = startCanvasCopy.getContext('2d');
     const oldMax = chartData[index].maxAmongAllLines;
 
     return {
         ctx: ctx,
-        newCtx: newCtx,
-        startCanvasCopy: startCanvasCopy,
         startStateCanvas: startStateCanvas,
         oldMax: oldMax,
         index: index
@@ -400,9 +395,8 @@ function runAnimationForCanvas(params) {
     const newMax = chartData[params.index].maxAmongAllLines;
 
     if (params.oldMax !== newMax) {
-        params.blockToAppend.appendChild(params.startCanvasCopy);
         requestAnimationFrame(() => {
-            animateChart(params.ctx, params.newCtx, params.oldMax, newMax, params.startStateCanvas, endStateCanvas, params.startCanvasCopy, 1, params.canvasHeight);
+            animateChart(params.ctx, params.oldMax, newMax, params.startStateCanvas, endStateCanvas, 1, params.canvasHeight);
         });
     }
 }
@@ -410,37 +404,27 @@ function runAnimationForCanvas(params) {
 /*
  * Animation of chart, when some lines are included or excluded
 */
-function animateChart(ctx, newCtx, oldMax, newMax, startStateCanvas, endStateCanvas, startCanvasCopy, i, canvasHeight) {
-    newCtx.save();
-    newCtx.clearRect(0, 0, startCanvasCopy.width, startCanvasCopy.height);
-
+function animateChart(ctx, oldMax, newMax, startStateCanvas, endStateCanvas, i, canvasHeight) {
     ctx.save();
-    ctx.clearRect(0, 0, startCanvasCopy.width, startCanvasCopy.height);
+    ctx.clearRect(0, 0, endStateCanvas.width, endStateCanvas.height);
 
     const coeff = oldMax > newMax ? newMax / oldMax : oldMax / newMax;
     const growFlag = oldMax < newMax;
 
     if (!growFlag) {
-        newCtx.transform(1, 0, 0, 1 + (1 / coeff - 1) * (i / animationStepsPerFrame), 0, -canvasHeight * (1 / coeff - 1) * (i / animationStepsPerFrame));
-        ctx.transform(1, 0, 0, coeff + (1 - coeff) * (i / animationStepsPerFrame), 0, canvasHeight * (1 - coeff) * (1 - i / animationStepsPerFrame));
+        ctx.transform(1, 0, 0, coeff + (1 - coeff) * (i / animationStepsPerFrame), 0, canvasHeight * dpi * (1 - coeff) * (1 - i / animationStepsPerFrame));
     } else {
-        newCtx.transform(1, 0, 0, 1 - (1 - coeff) * (i / animationStepsPerFrame), 0, canvasHeight * (1 - coeff) * (i / animationStepsPerFrame));
-        ctx.transform(1, 0, 0, (1 / coeff) - (1 / coeff - 1) * (i / animationStepsPerFrame), 0, canvasHeight * (1 / coeff - 1) * (-1 + i / animationStepsPerFrame));
+        ctx.transform(1, 0, 0, (1 / coeff) - (1 / coeff - 1) * (i / animationStepsPerFrame), 0, canvasHeight * dpi * (1 / coeff - 1) * (-1 + i / animationStepsPerFrame));
     }
 
-    ctx.drawImage(endStateCanvas, 0, 0);
+    ctx.drawImage(endStateCanvas, 0, 0, endStateCanvas.width, endStateCanvas.height);
     ctx.restore();
-
-    newCtx.drawImage(startStateCanvas, 0, 0);
-    newCtx.restore();
 
     if (i < animationStepsPerFrame) {
         i++;
         requestAnimationFrame(() => {
-            animateChart(ctx, newCtx, oldMax, newMax, startStateCanvas, endStateCanvas, startCanvasCopy, i, canvasHeight);
+            animateChart(ctx, oldMax, newMax, startStateCanvas, endStateCanvas, i, canvasHeight);
         });
-    } else {
-        startCanvasCopy.remove();
     }
 }
 
@@ -453,7 +437,7 @@ function cloneCanvas(oldCanvas) {
 
     newCanvas.width = oldCanvas.width;
     newCanvas.height = oldCanvas.height;
-    context.drawImage(oldCanvas, 0, 0);
+    context.drawImage(oldCanvas, 0, 0, oldCanvas.width, oldCanvas.height);
 
     return newCanvas;
 }
