@@ -187,8 +187,7 @@ function drawLine(ctx, startX, startY, endX, endY, color) {
     ctx.restore();
 }
 
-function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, startFrom, endWith, globalAlpha) {
-    globalAlpha = globalAlpha >= 0 ? globalAlpha : 1;
+function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, startFrom, endWith) {
     startFrom = startFrom ? startFrom : 0;
     endWith = endWith ? endWith : chart.columns[0].length - 1;
 
@@ -224,7 +223,6 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
 
     ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height);
 
-    ctx.globalAlpha = globalAlpha;
     ctx.font = `${11 * dpi}px Arial`;
     ctx.fillStyle = '#bbb';
 
@@ -356,8 +354,8 @@ function inclusionHandler(e, color) {
     const infoBoxContainer = e.target.closest('.chart-block').getElementsByClassName('info-box-container')[0];
     infoBoxContainer.classList.remove('shown');
 
-    drawChart(`chart-block--${index}`, chart, canvasWidth, canvasHeight, true, chart.leftBorderIndex, chart.rightBorderIndex, 0);
-    drawChart(`secondary-chart-block--${index}`, chart, canvasWidth, secondaryChartCanvasHeight, false, null, null, 0);
+    drawChart(`chart-block--${index}`, chart, canvasWidth, canvasHeight, true, chart.leftBorderIndex, chart.rightBorderIndex);
+    drawChart(`secondary-chart-block--${index}`, chart, canvasWidth, secondaryChartCanvasHeight);
 
     // Animation of changing chart
     const blockToAppend = document.getElementsByClassName(`chart-block--${index}`)[0];
