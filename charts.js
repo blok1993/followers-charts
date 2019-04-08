@@ -1,7 +1,7 @@
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const deviceDpr = window.devicePixelRatio || 1;
+const dpi = window.devicePixelRatio || 1;
 const containerPadding = 20;
 
 const scaleDivisionByY = 6;
@@ -181,8 +181,8 @@ function drawLine(ctx, startX, startY, endX, endY, color) {
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(startX,startY);
-    ctx.lineTo(endX,endY);
+    ctx.moveTo(startX * dpi,startY * dpi);
+    ctx.lineTo(endX * dpi,endY * dpi);
     ctx.stroke();
     ctx.restore();
 }
@@ -193,8 +193,8 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
 
     let currentCanvas = document.getElementById(canvasId);
     currentCanvas.setAttribute('touch-action', 'none');
-    currentCanvas.width = canvasWidth;
-    currentCanvas.height = canvasHeight;
+    currentCanvas.style.width = `${canvasWidth}px`;
+    currentCanvas.style.height = `${canvasHeight}px`;
 
     // Adding pointer events to canvas
     currentCanvas.addEventListener('pointerdown', _onChartPointerDown);
@@ -206,9 +206,24 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
     // let ctx = setupCanvas(currentCanvas);
     let ctx = currentCanvas.getContext('2d');
 
+    function fix_dpi(currentCanvas) {
+        let style = {
+            height() {
+                return +getComputedStyle(currentCanvas).getPropertyValue('height').slice(0,-2);
+            },
+            width() {
+                return +getComputedStyle(currentCanvas).getPropertyValue('width').slice(0,-2);
+            }
+        };
+        currentCanvas.setAttribute('width', style.width() * dpi);
+        currentCanvas.setAttribute('height', style.height() * dpi);
+    }
+
+    fix_dpi(currentCanvas);
+
     ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height);
 
-    ctx.font = '11px Arial';
+    ctx.font = `${11 * dpi}px Arial`;
     ctx.fillStyle = '#bbb';
 
     let minX = 0;
@@ -256,7 +271,7 @@ function drawChart(canvasId, chart, canvasWidth, canvasHeight, fillScales, start
     if (fillScales) {
         // Filling scale gradation by Y axis
         for (let l = 0; l < scaleDivisionByY; l++) {
-            ctx.fillText(parseInt(maxAmongAllLines * l * oneYScalePart), 0, parseInt((scaleDivisionByY - l) * oneYScalePart * canvasHeight) - 3);
+            ctx.fillText(parseInt(maxAmongAllLines * l * oneYScalePart), 0, (parseInt((scaleDivisionByY - l) * oneYScalePart * canvasHeight) - 3) * dpi);
         }
 
         // Filling scale gradation by X axis
