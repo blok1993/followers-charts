@@ -337,9 +337,6 @@ function inclusionHandler(e, color) {
     const infoBoxContainer = e.target.closest('.chart-block').getElementsByClassName('info-box-container')[0];
     infoBoxContainer.classList.remove('shown');
 
-    const mainBlockId = params.oldMax === chartData[params.index].maxAmongAllLines ? `chart-block--${index}` : `virtual-1`;
-    const lowBlockId = params.oldMax === chartData[params.index].maxAmongAllLines ? `secondary-chart-block--${index}` : `virtual-2`;
-
     if (params.oldMax === chartData[params.index].maxAmongAllLines) {
         drawChart(`chart-block--${index}`, chart, canvasWidth, canvasHeight, true, chart.leftBorderIndex, chart.rightBorderIndex);
         drawChart(`secondary-chart-block--${index}`, chart, canvasWidth, secondaryChartCanvasHeight);
@@ -348,6 +345,8 @@ function inclusionHandler(e, color) {
         drawChart(`virtual-2`, chart, canvasWidth, secondaryChartCanvasHeight, false);
     }
 
+    const mainBlockId = params.oldMax !== chartData[params.index].maxAmongAllLines ? `chart-block--${index}` : `virtual-1`;
+    const lowBlockId = params.oldMax !== chartData[params.index].maxAmongAllLines ? `secondary-chart-block--${index}` : `virtual-2`;
     // Animation of changing chart
     const blockToAppend = document.getElementsByClassName(`chart-block--${index}`)[0];
     const newC = document.getElementById(mainBlockId);
