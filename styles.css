@@ -5,6 +5,11 @@
     font-weight: 700;
 }
 
+#virtual-1, #virtual-2 {
+    position: absolute;
+    top: -9999px;
+}
+
 .night-mode {
     background-color: rgb(36, 47, 62);
     color: #fff;

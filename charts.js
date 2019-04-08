@@ -159,23 +159,6 @@ function start(firstRun) {
     }
 }
 
-
-function setupCanvas(canvas) {
-    // Get the device pixel ratio, falling back to 1.
-    let dpr = window.devicePixelRatio || 1;
-    // Get the size of the canvas in CSS pixels.
-    let rect = canvas.getBoundingClientRect();
-    // Give the canvas pixel dimensions of their CSS
-    // size * the device pixel ratio.
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    let ctx = canvas.getContext('2d');
-    // Scale all drawing operations by the dpr, so you
-    // don't have to worry about the difference.
-    ctx.scale(dpr, dpr);
-    return ctx;
-}
-
 function drawLine(ctx, startX, startY, endX, endY, color) {
     ctx.save();
     ctx.strokeStyle = color;
@@ -354,12 +337,20 @@ function inclusionHandler(e, color) {
     const infoBoxContainer = e.target.closest('.chart-block').getElementsByClassName('info-box-container')[0];
     infoBoxContainer.classList.remove('shown');
 
-    drawChart(`chart-block--${index}`, chart, canvasWidth, canvasHeight, true, chart.leftBorderIndex, chart.rightBorderIndex);
-    drawChart(`secondary-chart-block--${index}`, chart, canvasWidth, secondaryChartCanvasHeight);
+    const mainBlockId = params.oldMax === chartData[params.index].maxAmongAllLines ? `chart-block--${index}` : `virtual-1`;
+    const lowBlockId = params.oldMax === chartData[params.index].maxAmongAllLines ? `secondary-chart-block--${index}` : `virtual-2`;
+
+    if (params.oldMax === chartData[params.index].maxAmongAllLines) {
+        drawChart(`chart-block--${index}`, chart, canvasWidth, canvasHeight, true, chart.leftBorderIndex, chart.rightBorderIndex);
+        drawChart(`secondary-chart-block--${index}`, chart, canvasWidth, secondaryChartCanvasHeight);
+    } else {
+        drawChart(`virtual-1`, chart, canvasWidth, canvasHeight, false, chart.leftBorderIndex, chart.rightBorderIndex);
+        drawChart(`virtual-2`, chart, canvasWidth, secondaryChartCanvasHeight, false);
+    }
 
     // Animation of changing chart
     const blockToAppend = document.getElementsByClassName(`chart-block--${index}`)[0];
-    const newC = document.getElementById(`chart-block--${index}`);
+    const newC = document.getElementById(mainBlockId);
     params.blockToAppend = blockToAppend;
     params.canvas = newC;
     params.canvasHeight = canvasHeight;
@@ -367,7 +358,7 @@ function inclusionHandler(e, color) {
 
     // Animation of changing small secondary chart
     const smallBlockToAppend = document.getElementsByClassName(`secondary-chart-block--${index}`)[0];
-    const smallNewC = document.getElementById(`secondary-chart-block--${index}`);
+    const smallNewC = document.getElementById(lowBlockId);
     smallChartParams.blockToAppend = smallBlockToAppend;
     smallChartParams.canvas = smallNewC;
     smallChartParams.canvasHeight = secondaryChartCanvasHeight;
